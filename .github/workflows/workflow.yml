@@ -9,3 +9,23 @@ jobs:
         uses: stepci/stepci@main
         with:
           workflow: "tests/auth.yml"
+      - name: Home filters
+        uses: stepci/stepci@main
+        with:
+          workflow: "tests/home-filters.yml"
+      - name: Backgrounds
+        uses: stepci/stepci@main
+        with:
+          workflow: "tests/backgrounds.yml"
+      - name: Circles
+        uses: stepci/stepci@main
+        with:
+          workflow: "tests/circles.yml"
+      - name: Apply
+        uses: stepci/stepci@main
+        with:
+          workflow: "tests/apply.yml"
+      - name: Register
+        uses: stepci/stepci@main
+        with:
+          workflow: "tests/register.yml"

@@ -1,7 +1,0 @@
-version: "1.1"
-name: Status Check
-env:
-  host: app-dev.nufa.ai
-tests:
-  some test:
-   - $ref: "tests.yml"
