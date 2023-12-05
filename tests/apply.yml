@@ -1,0 +1,150 @@
+version: "1.1"
+name: Apply Check
+env:
+  host: app-dev.nufa.ai
+  endpoint: /api/v1/photo/filter/apply
+  auth-key: ieqf8cdPyRwu.tHot4JCvQvXZCAEBE_a@hVh7sgaEf.9kdQkLzAyiHZiouUYBmnG@vthM.WewR.trTAj9H._vNJdvGYT3VcEtoM@
+  user-agent: nufa%20Debug/2431 CFNetwork/1410.0.3 Darwin/22.6.0
+  id: "62386198369128360192386"
+  udid: 1b107780-fb01-11ed-be56-0242ac120002
+tests:
+  Apply check:
+    steps:
+      - name: auth request
+        http:
+          url: https://${{env.host}}/api/v1/auth
+          method: POST
+          headers:
+            Content-Type: application/json
+          json: 
+            id: ${{env.id}}
+          captures:
+            auth-key:
+              jsonpath: $.auth-token
+          check:
+            status: /^20/
+      - name: register request
+        http:
+          url: https://${{env.host}}/api/v1/photo/process/register/multiple
+          method: POST
+          headers:
+            Content-Type: image/jpeg
+            api-auth-key: ${{captures.auth-key}}
+            User-Agent: "${{env.user-agent}}"
+            gender: male
+            processing-type: before
+            ml-version: v2
+            udid: ${{env.udid}}
+          file: images/male.jpg
+          captures:
+            requestId:
+              jsonpath: $.result.requestId
+          check:
+            status: /^20/
+      - name: NB-56, NB-57, NB-58, NB-59
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            api-auth-key: ${{captures.auth-key}}
+            User-Agent: "${{env.user-agent}}"
+          json:
+            request_id: ${{captures.requestId}}
+            filter_id: "jack_the_sparrow"
+            image_types: ["before"]
+          check:
+            status: /^20/
+      - name: NB-60
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            api-auth-key: "invalidKey"
+            User-Agent: "${{env.user-agent}}"
+          json:
+            request_id: ${{captures.requestId}}
+            filter_id: "jack_the_sparrow"
+            image_types: ["before"]
+          check:
+            status: /^40/
+      - name: NB-61
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            User-Agent: "${{env.user-agent}}"
+          json:
+            request_id: ${{captures.requestId}}
+            filter_id: "jack_the_sparrow"
+            image_types: ["before"]
+          check:
+            status: /^40/
+      - name: NB-62
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            api-auth-key: ${{captures.auth-key}}
+            User-Agent: "${{env.user-agent}}"
+          json:
+            request_id: ${{captures.requestId}}
+            filter_id: "jack_the_sparrow"
+            image_types: ["before"]
+          check:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                result:
+                  type: object
+                  properties:
+                    is_registered: 
+                      type: boolean
+            status: /^20/
+      - name: NB-63
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            api-auth-key: ${{captures.auth-key}}
+            User-Agent: "${{env.user-agent}}"
+          json:
+            request_id: "000z000-z000-0000-00z0-z00zz0z000z0"
+            filter_id: "jack_the_sparrow"
+            image_types: ["before"]
+          check:
+            status: /^40/
+      - name: NB-64
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            api-auth-key: ${{captures.auth-key}}
+            User-Agent: "${{env.user-agent}}"
+          json:
+            request_id: ${{captures.requestId}}
+            filter_id: "invalid_filter_id"
+            image_types: ["before"]
+          check:
+            status: /^40/
+      - name: NB-65
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            api-auth-key: ${{captures.auth-key}}
+            User-Agent: "${{env.user-agent}}"
+          json:
+            request_id: ${{captures.requestId}}
+            filter_id: "jack_the_sparrow"
+            image_types: ["invalid type"]
+          check:
+            status: /^40/

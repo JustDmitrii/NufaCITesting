@@ -1,0 +1,171 @@
+version: "1.1"
+name: Register Check
+env:
+  host: app-dev.nufa.ai
+  endpoint: /api/v1/photo/process/register/multiple
+  auth-key: ieqf8cdPyRwu.tHot4JCvQvXZCAEBE_a@hVh7sgaEf.9kdQkLzAyiHZiouUYBmnG@vthM.WewR.trTAj9H._vNJdvGYT3VcEtoM@
+  user-agent: nufa%20Debug/2431 CFNetwork/1410.0.3 Darwin/22.6.0
+  id: "62386198369128360192386"
+  udid: 1b107780-fb01-11ed-be56-0242ac120002
+tests:
+  Register check:
+    steps:
+      - name: auth request
+        http:
+          url: https://${{env.host}}/api/v1/auth
+          method: POST
+          headers:
+            Content-Type: application/json
+          json: 
+            id: ${{env.id}}
+          captures:
+            auth-key:
+              jsonpath: $.auth-token
+          check:
+            status: /^20/
+      - name: NB-40, NB-41, NB-42, NB-43, NB-44, NB-45, NB-46, NB-47
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: image/jpeg
+            api-auth-key: ${{captures.auth-key}}
+            User-Agent: "${{env.user-agent}}"
+            gender: male
+            processing-type: before
+            ml-version: v2
+            udid: ${{env.udid}}
+          file: images/male.jpg
+          captures:
+            requestId:
+              jsonpath: $.result.requestId
+          check:
+            status: /^20/
+      - name: NB-48
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: image/jpeg
+            api-auth-key: iEqf9cdPyRwu.tHoY3JCvQvXZCAEBE_a@hVh5sgaEf.1kdQkLzAyiHZiouUYbMnG@vthM.WewR.tRtAj9H._vNJdvGYT3VcEtoM@
+            User-Agent: "${{env.user-agent}}"
+            gender: male
+            processing-type: before
+            ml-version: v2
+            udid: ${{env.udid}}
+          file: images/male.jpg
+          check:
+            status: /^40/
+      - name: NB-49
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: image/jpeg
+            User-Agent: "${{env.user-agent}}"
+            gender: male
+            processing-type: before
+            ml-version: v2
+            udid: ${{env.udid}}
+          file: images/male.jpg
+          check:
+            status: /^40/
+      - name: NB-50
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: image/jpeg
+            User-Agent: "${{env.user-agent}}"
+            api-auth-key: ${{captures.auth-key}}
+            gender: other
+            processing-type: before
+            ml-version: v2
+            udid: ${{env.udid}}
+          file: images/male.jpg
+          check:
+            status: /^40/
+      - name: NB-51
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: image/jpeg
+            User-Agent: "${{env.user-agent}}"
+            api-auth-key: ${{captures.auth-key}}
+            processing-type: before
+            ml-version: v2
+            udid: ${{env.udid}}
+          file: images/male.jpg
+          check:
+            status: /^40/
+      - name: NB-52
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: image/jpeg
+            User-Agent: "${{env.user-agent}}"
+            api-auth-key: ${{captures.auth-key}}
+            gender: male
+            processing-type: before
+            ml-version: v2
+            udid: abracadabra
+          file: images/male.jpg
+          check:
+            status: /^40/
+      - name: NB-53
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: image/jpeg
+            User-Agent: "${{env.user-agent}}"
+            api-auth-key: ${{captures.auth-key}}
+            gender: male
+            processing-type: before
+            ml-version: v2
+          file: images/male.jpg
+          check:
+            status: /^40/
+      - name: NB-54
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: image/jpeg
+            api-auth-key: ${{captures.auth-key}}
+            User-Agent: "${{env.user-agent}}"
+            gender: male
+            processing-type: before
+            ml-version: v2
+            udid: ${{env.udid}}
+          file: images/male.jpg
+          check:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                result:
+                  type: object
+                  properties:
+                    isRegistered: 
+                      type: boolean
+                    requestId:
+                      type: string
+            status: /^20/
+      - name: NB-55
+        http:
+          url: https://${{env.host}}/api/v1/photo/filter/apply
+          method: POST
+          headers:
+            Content-Type: application/json
+            api-auth-key: ${{captures.auth-key}}
+            User-Agent: "${{env.user-agent}}"
+          json:
+            request_id: ${{captures.requestId}}
+            filter_id: "jack_the_sparrow"
+            image_types: ["before"]
+          check:
+            status: /^20/

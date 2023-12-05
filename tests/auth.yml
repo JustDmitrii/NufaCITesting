@@ -1,0 +1,181 @@
+version: "1.1"
+name: Auth Check
+env:
+  host: app-dev.nufa.ai
+  endpoint: /api/v1/auth
+  auth-key: ieqf8cdPyRwu.tHot4JCvQvXZCAEBE_a@hVh7sgaEf.9kdQkLzAyiHZiouUYBmnG@vthM.WewR.trTAj9H._vNJdvGYT3VcEtoM@
+  user-agent: nufa%20Debug/2431 CFNetwork/1410.0.3 Darwin/22.6.0
+  id: "62386198369128360192386"
+tests:
+  Auth check:
+    steps:
+      - name: NB-01
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+          json: 
+            id: ${{env.id}}
+          check:
+            status: /^20/
+      - name: NB-02
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: image/jpeg
+          json: 
+            id: ${{env.id}}
+          check:
+            status: 400
+      - name: NB-03
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: aplication/json
+          json: 
+            id: ${{env.id}}
+          check:
+            status: 400
+      - name: NB-04
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            User-Agent: "${{env.user-agent}}"
+          json: 
+            id: ${{env.id}}
+          check:
+            status: /^20/
+      - name: NB-05
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            User-Agent: "${{env.user-agent}}wrongpart"
+          json: 
+            id: ${{env.id}}
+          check:
+            status: /^20/
+      - name: NB-06
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            User-Agent: "${{env.user-agent}}"
+          file: images/male.jpg
+          check:
+            status: 400
+      - name: NB-07
+        http:
+            url: https://${{env.host}}${{env.endpoint}}
+            method: POST
+            headers:
+              Content-Type: application/json
+              User-Agent: "${{env.user-agent}}"
+            json: 
+              id: ${{env.id}}
+            check:
+              status: /^20/
+      - name: NB-08
+        http:
+            url: https://${{env.host}}${{env.endpoint}}
+            method: POST
+            headers:
+              Content-Type: application/json
+              User-Agent: "${{env.user-agent}}"
+            json: 
+              id: "wrongid"
+            check:
+              status: 400
+      - name: NB-09
+        http:
+            url: https://${{env.host}}${{env.endpoint}}
+            method: POST
+            headers:
+              Content-Type: application/json
+              User-Agent: "${{env.user-agent}}"
+            json: 
+              id: 62386198369128360192386
+            check:
+              status: 400
+      - name: NB-10
+        http:
+            url: https://${{env.host}}${{env.endpoint}}
+            method: POST
+            headers:
+              Content-Type: application/json
+              User-Agent: "${{env.user-agent}}"
+            json: 
+              id: ${{env.id}}
+              id2: "wrongid"
+            check:
+              status: /^20/
+      - name: NB-11
+        http:
+            url: https://${{env.host}}${{env.endpoint}}
+            method: POST
+            headers:
+              Content-Type: application/json
+              User-Agent: "${{env.user-agent}}"
+              body: {}
+            check:
+              status: 400
+      - name: NB-12
+        http:
+            url: https://${{env.host}}${{env.endpoint}}
+            method: POST
+            headers:
+              Content-Type: application/json
+              User-Agent: "${{env.user-agent}}"
+              json: {}
+            check:
+              status: 400
+      - name: NB-13
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+                Content-Type: application/json
+                User-Agent: "${{env.user-agent}}"
+          json: 
+                id: ${{env.id}}
+          check:
+            schema:
+              type: object
+      - name: NB-14
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+                Content-Type: application/json
+                User-Agent: "${{env.user-agent}}"
+          json: 
+                id: ${{env.id}}
+          check:
+            schema:
+              type: object
+              required:
+                - auth-token
+      - name: NB-15
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: POST
+          headers:
+                Content-Type: application/json
+                User-Agent: "${{env.user-agent}}"
+          json: 
+                id: ${{env.id}}
+          check:
+            schema:
+              type: object
+              properties:
+                auth-token:
+                  type: string
+              required:
+                - auth-token

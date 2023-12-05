@@ -1,0 +1,112 @@
+version: "1.1"
+name: Circles Check
+env:
+  host: app-dev.nufa.ai
+  endpoint: /api/v1/configs/home-filters
+  auth-key: ieqf8cdPyRwu.tHot4JCvQvXZCAEBE_a@hVh7sgaEf.9kdQkLzAyiHZiouUYBmnG@vthM.WewR.trTAj9H._vNJdvGYT3VcEtoM@
+  user-agent: nufa%20Debug/2431 CFNetwork/1410.0.3 Darwin/22.6.0
+  id: "62386198369128360192386"
+tests:
+  Home-filters check:
+    steps:
+      - name: auth request
+        http:
+          url: https://${{env.host}}/api/v1/auth
+          method: POST
+          headers:
+            Content-Type: application/json
+          json: 
+            id: ${{env.id}}
+          captures:
+            auth-key:
+              jsonpath: $.auth-token
+          check:
+            status: /^20/
+      - name: NB-32, NB-33, NB-34 
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: GET
+          headers:
+            Content-Type: application/json
+            api-auth-key: ${{captures.auth-key}}
+            User-Agent: "${{env.user-agent}}"
+            Accept-Language: en-US,en;q=0.9
+            Accept-Encoding: gzip, deflate, br
+          check:
+            status: /^20/
+      - name: NB-35
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: GET
+          headers:
+            Content-Type: application/json
+            api-auth-key: eyJHbGciOiJIUzI7NiIsInR4cCI6IkpXVCJ3.eYJkYXRhIjp7InVzZXJfaWqiOiI4MjM4NjE5ODM2OtEyODM2MDE5MjM4NiJ9LCJpYXQiOjE2OTg3NjA0ODYsImV4cCI6MTY5ODg0Njg4Nn0.FPRJAbJ495KM1quNWL5jg_VytGXVsQnDPhzChrsH9CI
+            User-Agent: "${{env.user-agent}}"
+            Accept-Language: en-US,en;q=0.9
+            Accept-Encoding: gzip, deflate, br
+          check:
+            status: /^40/
+      - name: NB-36
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: GET
+          headers:
+            Content-Type: application/json
+            api-auth-key: ""
+            User-Agent: "${{env.user-agent}}"
+            Accept-Language: en-US,en;q=0.9
+            Accept-Encoding: gzip, deflate, br
+          check:
+            status: /^40/
+      - name: NB-37
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: GET
+          headers:
+            Content-Type: application/json
+            User-Agent: "${{env.user-agent}}"
+            Accept-Language: en-US,en;q=0.9
+            Accept-Encoding: gzip, deflate, br
+          check:
+            status: /^40/
+      - name: NB-38
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: GET
+          headers:
+            api-auth-key: ${{captures.auth-key}}
+            Content-Type: application/json
+            User-Agent: "${{env.user-agent}}"
+            Accept-Language: en-US,en;q=0.9
+            Accept-Encoding: gzip, deflate, br
+          check:
+              schema:
+                type: array
+      - name: NB-39
+        http:
+          url: https://${{env.host}}${{env.endpoint}}
+          method: GET
+          headers:
+            api-auth-key: ${{captures.auth-key}}
+            Content-Type: application/json
+            User-Agent: "${{env.user-agent}}"
+            Accept-Language: en-US,en;q=0.9
+            Accept-Encoding: gzip, deflate, br
+          check:
+              jsonpath:
+                $.[0].name:
+                  - isString: true
+                $.[0].display_name:
+                  - isString: true
+                $.[0].type:
+                  - isString: true
+                $.[0].visible_count:
+                  - isNumber: true
+                $.[0].style:
+                  - isString: true
+                $.[0].params:
+                  - isObject: true
+                $.[0].item_params:
+                  - isObject: true
+                $.[0].items:
+                  - isObject: true
